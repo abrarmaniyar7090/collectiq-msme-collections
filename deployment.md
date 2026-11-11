@@ -1,4 +1,4 @@
-# CollectIQ – Local Deployment Guide
+﻿# CollectIQ â€“ Local Deployment Guide
 
 ## 1. Project Overview
 

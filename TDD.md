@@ -1,298 +1,285 @@
-# CollectIQ – Technical Design Document
-
-**GitHub Repository:** https://github.com/abrarmaniyar7090/collectiq-msme-collections
-**Project:** AI-Assisted Field Collections Management Platform
-**Selected Problem:** MSME Lender's Field Collections App with AI Prioritisation
-**Status:** Working prototype
+﻿# CollectIQ – Local Deployment Guide
 
 ## 1. Project Overview
 
-CollectIQ is a field collections management platform designed for MSME lending institutions. It helps field officers manage assigned loans, prioritise collection activities, record customer interactions, track payment promises and generate customer payment reminders.
+CollectIQ is an AI-assisted field collections management platform for MSME lending institutions.
 
-The platform provides separate interfaces for field officers and branch managers. It uses explainable, rule-based AI prioritisation to help officers identify loans that may require earlier attention.
+It helps field officers manage assigned loans, prioritise collection activities, record customer interactions, track payment promises and generate payment reminders.
 
-The solution also supports offline activity capture with automatic synchronisation when connectivity returns.
+Branch managers can monitor collection performance, review field officer activities and manage payment promises.
 
-## 2. Problem Statement
+This guide explains how to install, configure and run CollectIQ locally.
 
-MSME lending institutions often manage large loan portfolios through manual processes. Field officers may struggle to identify which borrowers need immediate attention, while branch managers have limited visibility into collection activities and payment promises.
+## 2. Prerequisites
 
-CollectIQ addresses these challenges through:
+Install the following software:
 
-- Centralised loan and collection activity management.
-- Automatic loan assignment.
-- Explainable loan prioritisation.
-- Payment promise tracking.
-- Customer reminder generation in English and Hindi.
-- Offline activity capture and synchronisation.
-- Role-based dashboards and access control.
+- Python 3.10 or later
+- Node.js 20.19+ or 22.12+
+- npm
+- Git
 
-## 3. Technology Stack
+Verify the installations:
 
-| Component | Technology |
-|---|---|
-| Frontend | React, TypeScript |
-| Build Tool | Vite |
-| Styling | Tailwind CSS |
-| Backend | Python, FastAPI |
-| Database | SQLite |
-| ORM | SQLAlchemy |
-| Authentication | JWT |
-| Password Security | bcrypt |
-| API Documentation | Swagger / OpenAPI |
-| Offline Storage | Browser Local Storage |
-| AI Prioritisation | Explainable rule-based scoring |
-| Testing | Pytest |
+```powershell
+python --version
+node --version
+npm --version
+git --version
+```
 
-## 4. System Architecture
+## 3. Backend Setup
 
-The application follows a frontend-backend architecture.
+### Step 1: Navigate to the Backend Directory
 
-**Frontend**
-- Provides login and role-specific dashboards.
-- Displays assigned loans and priority scores.
-- Supports collection activity recording.
-- Provides reminder generation and promise tracking.
-- Stores pending activities locally when offline.
+Open PowerShell or the VS Code terminal in the main CollectIQ project directory.
 
-**Backend**
-- Exposes REST APIs through FastAPI.
-- Handles authentication and role-based permissions.
-- Manages loan records and assignments.
-- Calculates priority scores.
-- Stores collection activities and payment promises.
-- Generates and manages reminder drafts.
+Run:
 
-**Database**
-- SQLite stores users, loans, promises, collection activities and reminder records.
-- SQLAlchemy manages database interactions and relationships.
+```powershell
+cd backend
+```
 
-## 5. User Roles and Permissions
+### Step 2: Create a Virtual Environment
 
-### Field Officer
-- View assigned loans.
-- View AI-generated priority scores and explanations.
-- Record calls and visits.
-- Capture GPS coordinates during activity submission.
-- Record payment received, promise to pay, not reachable and dispute outcomes.
-- View activity history.
-- Generate English and Hindi payment reminders.
-- Queue activities offline and synchronise them when online.
+```powershell
+python -m venv venv
+```
 
-### Branch Manager
-- View loan and collection dashboard statistics.
-- View loan priority information.
-- Monitor field officer performance.
-- View and manage payment promise statuses.
-- Review collection activity summaries.
-- Monitor overdue loan distribution and collection metrics.
+### Step 3: Activate the Virtual Environment
 
-Backend role restrictions are enforced through authenticated API dependencies.
+```powershell
+.\venv\Scripts\Activate.ps1
+```
 
-## 6. Core Functional Modules
+### Step 4: Install Backend Dependencies
 
-### 6.1 Authentication and Access Control
+```powershell
+pip install -r requirements.txt
+```
 
-JWT-based authentication protects application APIs.
+### Step 5: Create Demo User Accounts
 
-Demo accounts:
+Run:
 
-| Role | Email |
-|---|---|
-| Field Officer | officer@collectiq.demo |
-| Branch Manager | manager@collectiq.demo |
+```powershell
+python create_demo_users.py
+```
 
-Passwords are provided separately in the deployment instructions.
+This creates the following demonstration accounts:
 
-The backend validates the authenticated user's role before allowing access to restricted endpoints.
+- Field Officer: Rahul Chouhan
+- Branch Manager: Branch Manager
 
-### 6.2 Loan Import and Assignment
+The script checks for existing users before creating new accounts.
 
-The application supports CSV-based loan import.
+### Step 6: Start the Backend Server
 
-The assignment service uses pincode mapping and officer workload to determine loan assignments.
+```powershell
+python -m uvicorn app.main:app --reload
+```
+
+Backend URL:
+
+`http://127.0.0.1:8000`
+
+API Documentation:
+
+`http://127.0.0.1:8000/docs`
+
+Health Check:
+
+`http://127.0.0.1:8000/health`
+
+Keep the backend terminal running.
+
+## 4. Frontend Setup
+
+### Step 1: Open a Second Terminal
+
+Open another terminal in VS Code.
+
+Navigate to the main CollectIQ project directory and run:
+
+```powershell
+cd frontend
+```
+
+### Step 2: Install Frontend Dependencies
+
+```powershell
+npm install
+```
+
+### Step 3: Start the Frontend Development Server
+
+```powershell
+npm run dev -- --port 5174
+```
+
+Frontend URL:
+
+`http://localhost:5174`
+
+Keep the frontend terminal running.
+
+Open the frontend URL in your browser to access CollectIQ.
+
+## 5. Creating Demo Loan Data
+
+The project includes a sample loan dataset:
+
+`backend/sample_loans.csv`
+
+This file contains five demonstration loan records.
+
+### Step 1: Open API Documentation
+
+Make sure the backend is running.
+
+Open:
+
+`http://127.0.0.1:8000/docs`
+
+### Step 2: Authenticate as Branch Manager
+
+1. Find POST `/api/v1/auth/login`.
+2. Click Try it out.
+3. Enter the branch manager credentials:
+
+```json
+{
+  "email": "manager@collectiq.demo",
+  "password": "Manager@123"
+}
+```
+
+4. Click Execute.
+5. Copy the returned access token.
+6. Click Authorize and provide the access token using the authentication format shown by the API documentation.
+
+### Step 3: Import Sample Loans
+
+1. Find POST `/api/v1/loans/import-csv` under Loan Management.
+2. Click Try it out.
+3. Upload `backend/sample_loans.csv` from the project directory.
+4. Click Execute.
+
+The application validates the CSV data and imports valid loan records.
+
+### Step 4: Automatic Loan Assignment
+
+The assignment service uses pincode mapping and officer workload to assign loans to available field officers.
 
 Duplicate loan records are skipped during repeated imports.
 
-### 6.3 AI Loan Prioritisation
+For a fresh database, the expected import result is:
 
-CollectIQ calculates a priority score from 0 to 100 using:
+- Total processed: 5
+- Imported: 5
+- Skipped duplicates: 0
+- Failed: 0
 
-- Days past due (DPD).
-- Outstanding loan amount.
-- Broken payment promises.
-- Missing payment promise dates.
+## 6. Environment Configuration
 
-The scoring system produces a priority category:
+The current local prototype uses its existing development configuration.
 
-| Score | Category |
-|---|---|
-| 70–100 | High |
-| 40–69 | Medium |
-| 0–39 | Low |
+No additional environment variables are required for the current local demonstration.
 
-Each loan includes up to three explanatory reasons for its score.
+The JWT signing secret is currently configured in:
 
-The scoring system is deterministic and explainable. It is designed as decision support for field officers, not as an automated loan approval or recovery decision system.
+`backend/app/core/security.py`
 
-### 6.4 Collection Activity Management
+The development secret must be replaced with a securely managed environment variable before production deployment.
 
-Field officers can record:
+Do not commit passwords, access tokens, API keys or production secrets to GitHub.
 
-- Call activities.
-- Visit activities.
-- Payment received.
-- Promise to pay.
-- Not reachable.
-- Dispute.
+## 7. Demo Login Credentials
 
-Activity records can include notes, GPS coordinates and timestamps.
+### Field Officer
 
-The backend uses client event IDs to prevent duplicate activity creation during synchronisation.
+Name: Rahul Chouhan
 
-### 6.5 Promise-to-Pay Tracking
+Email: `officer@collectiq.demo`
 
-When a borrower commits to a payment, the officer can record the promised amount and payment date.
+Password: `Officer@123`
 
-The system maintains promise records and supports status updates:
+### Branch Manager
 
-- Pending
-- Fulfilled
-- Broken
-- Overdue (calculated for pending promises past their due date)
+Name: Branch Manager
 
-Branch managers can monitor promise performance through the manager dashboard.
+Email: `manager@collectiq.demo`
 
-### 6.6 AI Reminder Generator
+Password: `Manager@123`
 
-The reminder module provides approved templates for:
+These credentials are provided for local demonstration purposes only.
 
-- Payment Due.
-- Payment Overdue.
-- Promise Reminder.
+## 8. Application Workflow
 
-Both English and Hindi are supported.
+1. Open the frontend URL.
+2. Sign in using either demo account.
+3. Field officers can view assigned loans and priority scores.
+4. Record collection calls and visits.
+5. Capture GPS coordinates during activity submission.
+6. Record payment received, promise to pay, not reachable and dispute outcomes.
+7. Generate English or Hindi payment reminder drafts.
+8. Review and approve reminder drafts.
+9. Branch managers can monitor collection statistics and field officer performance.
+10. Branch managers can review and update payment promise statuses.
 
-The reminder workflow is:
+## 9. Database
 
-1. Select a loan.
-2. Select the language.
-3. Select the reminder type.
-4. Generate a draft.
-5. Review the message.
-6. Approve the draft.
-7. Trigger the mock sending workflow.
+The application uses SQLite with SQLAlchemy.
 
-The system includes safety checks to block threatening or inappropriate language.
+Database tables are created automatically during backend application startup.
 
-Officer approval is required before sending. The current implementation uses mock sending only; no real SMS or WhatsApp message is delivered.
+The local database file is:
 
-### 6.7 Offline Activity Capture
+`backend/collectiq.db`
 
-When internet connectivity is unavailable, collection activities are stored in browser Local Storage.
+The database is created locally when the application is first run.
 
-When connectivity returns, the application attempts to synchronise queued activities with the backend.
+Demo users are created using `create_demo_users.py`.
 
-Client event IDs support duplicate protection during synchronisation.
+Loan records are populated using the sample CSV import workflow.
 
-### 6.8 Manager Dashboard
+The prototype uses demonstration data.
 
-The manager dashboard provides:
+## 10. Testing and Verification
 
-- Total loan count.
-- Total outstanding amount.
-- Pending payment promises.
-- Collection activity statistics.
-- Field officer performance.
-- DPD distribution.
-- Promise tracking.
-- Roll-rate baseline and target indicators.
+### Backend Tests
 
-Historical roll-rate calculation using periodic portfolio snapshots is not implemented in the current prototype. The dashboard displays the supplied baseline and target alongside current portfolio information.
+Navigate to the backend directory and run:
 
-## 7. Database Design
+```powershell
+python -m pytest -v
+```
 
-The main database entities are:
+### Frontend Production Build
 
-| Entity | Purpose |
-|---|---|
-| User | Stores user credentials, roles and branch information |
-| Loan | Stores borrower, loan, outstanding amount, DPD and assignment information |
-| PromiseToPay | Stores promised amounts, dates and payment promise statuses |
-| CollectionActivity | Stores calls, visits, outcomes, notes, GPS coordinates and timestamps |
-| Reminder | Stores reminder drafts, approval and mock sending status |
+Navigate to the frontend directory and run:
 
-Relationships:
+```powershell
+npm run build
+```
 
-- One field officer can have multiple assigned loans.
-- One loan can have multiple collection activities.
-- One loan can have multiple payment promises.
-- Reminder records are associated with the relevant loan and workflow.
+### Frontend Code Quality Checks
 
-## 8. Security and Compliance Considerations
+```powershell
+npm run lint
+```
 
-The prototype includes:
+These commands run the backend test suite, compile the frontend TypeScript code, generate a production build and check frontend code quality.
 
-- JWT-based authentication.
-- Password hashing.
-- Role-based API access restrictions.
-- Authenticated loan and collection operations.
-- Contact-hour restrictions between 8:00 AM and 7:00 PM IST.
-- Reminder template safety checks.
-- Officer approval before reminder sending.
-- GPS capture associated with collection activities.
+## 11. Important Notes
 
-The implementation uses demonstration data and should be extended with production-grade encryption, audit controls, consent management, retention policies and comprehensive DPDP compliance measures before real-world deployment.
-
-## 9. Testing and Validation
-
-The following workflows were manually verified:
-
-| Test | Result |
-|---|---|
-| Field officer login | Passed |
-| Branch manager login | Passed |
-| Field officer blocked from manager dashboard | Passed – 403 |
-| Branch manager blocked from creating collection activities | Passed – 403 |
-| Manager loan priority access | Passed – 200 |
-| Manager promise access | Passed – 200 |
-| Field officer loan priority access | Passed – 200 |
-| Unauthenticated loan priority request | Passed – 401 |
-| CSV import and duplicate handling | Verified |
-| Priority scoring and explanations | Verified |
-| Collection activity recording | Verified |
-| Promise creation and status updates | Verified |
-| Offline activity synchronisation | Verified |
-| English and Hindi reminder templates | Verified |
-| Reminder approval and mock sending | Verified |
-| Contact-hour restrictions | Verified |
-
-The current demo includes five sample loans and one field officer. Multi-officer data isolation requires additional testing.
-
-## 10. Scope Limitations
-
-The current submission is a working prototype. The following capabilities require further development:
-
-- Historical roll-rate calculation using scheduled portfolio snapshots.
-- Multi-officer and multi-branch production testing.
-- Real SMS and WhatsApp integrations.
-- Production deployment and database migration.
-- Expanded DPDP consent and data-retention workflows.
-- Production-grade monitoring, audit logging and security hardening.
-- Full bilingual application interface; currently, the reminder generator supports English and Hindi while the main interface is in English.
-
-## 11. Future Enhancements
-
-- Support multiple branches and larger field teams.
-- Introduce historical collection trend analysis.
-- Integrate approved SMS and WhatsApp providers.
-- Improve offline conflict handling and synchronisation visibility.
-- Add multilingual application navigation.
-- Add more comprehensive automated API and frontend tests.
-- Deploy using a production database and secure cloud infrastructure.
-
-## 12. Conclusion
-
-CollectIQ demonstrates an integrated approach to MSME field collections management through loan prioritisation, collection activity tracking, payment promise management, reminder generation and offline synchronisation.
-
-The prototype focuses on explainability, role-based access and practical workflows that can help field officers organise collection activities and give branch managers better operational visibility.
+- Reminder sending is simulated. No real SMS or WhatsApp messages are delivered.
+- Reminder drafts use the application's supported templates and safety checks.
+- Offline activities are stored in browser Local Storage and synchronised when connectivity returns.
+- Loan priority scores are advisory and use explainable, rule-based scoring.
+- Priority scoring considers DPD, outstanding amount, payment promise history and missing promise dates.
+- The current prototype contains five sample loans and one demo field officer.
+- The main application interface is in English. The reminder generator supports English and Hindi.
+- Customer contact is restricted to permitted hours between 8:00 AM and 7:00 PM IST.
+- Historical roll-rate calculation using monthly portfolio snapshots is not implemented in the current prototype.
+- Production deployment requires additional security, monitoring, database and compliance configuration.

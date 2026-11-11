@@ -1,10 +1,15 @@
+import os
 from datetime import datetime, timedelta, timezone
 
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
 
-SECRET_KEY = "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_BEFORE_DEPLOYMENT"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "collectiq-local-development-key-change-before-deployment"
+)
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
