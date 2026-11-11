@@ -1,0 +1,6 @@
+loan_id,borrower_name,business_type,phone_number,pincode,outstanding_amount,dpd,due_date,promise_date
+LN-10293,Company B,Packaging Unit,9876500001,452001,640000,12,2026-10-28,2026-11-12
+LN-10871,Company C,Fertiliser Shop,9876500002,452010,310000,27,2026-10-13,
+LN-11930,Company D,Printing Press,9876500003,452016,220000,19,2026-10-21,2026-10-31
+LN-12045,Company E,Auto Parts,9876500004,452001,180000,8,2026-11-01,
+LN-12046,Company F,Textile Business,9876500005,452010,425000,15,2026-10-25,2026-11-15

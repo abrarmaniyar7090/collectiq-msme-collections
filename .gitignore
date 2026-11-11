@@ -1,0 +1,42 @@
+# Python virtual environments
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*.pyd
+
+# Python testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Frontend dependencies
+frontend/node_modules/
+
+# Frontend build output
+frontend/dist/
+frontend/.vite/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/

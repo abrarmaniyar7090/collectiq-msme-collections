@@ -1,0 +1,11 @@
+fastapi==0.162.2
+uvicorn==0.54.0
+sqlalchemy==2.1.8
+python-jose==3.5.0
+passlib==1.7.4
+bcrypt==4.0.1
+python-multipart==0.0.33
+email-validator==2.3.0
+
+pytest==9.2.0
+httpx==0.28.1
